@@ -1,0 +1,54 @@
+# Configurare Decap CMS pentru Cleaning Journal
+#
+# Autentificare (alege una la deploy):
+#  A) git-gateway  -> cu Netlify Identity (varianta implicită mai jos)
+#  B) github       -> conectare directă la GitHub (necesită un OAuth app)
+#
+# Pentru testare locală rulează: npx decap-server  (împreună cu "npm run dev")
+local_backend: true
+
+backend:
+  name: git-gateway
+  branch: main
+
+# Dacă preferi conectarea directă la GitHub, comentează blocul de mai sus
+# și decomentează-l pe acesta (înlocuind user/repo):
+# backend:
+#   name: github
+#   repo: utilizatorul-tau/cleaningjournal
+#   branch: main
+
+media_folder: "src/assets/uploads"
+public_folder: "/assets/uploads"
+
+locale: "ro"
+
+collections:
+  - name: "articole"
+    label: "Articole"
+    label_singular: "Articol"
+    folder: "src/posts"
+    create: true
+    slug: "{{slug}}"
+    preview_path: "articole/{{slug}}/"
+    summary: "{{title}}  —  {{category}}  ({{date | date('DD.MM.YYYY')}})"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { name: "title", label: "Titlu", widget: "string" }
+      - { name: "dek", label: "Subtitlu / descriere scurtă", widget: "text" }
+      - name: "category"
+        label: "Categorie"
+        widget: "select"
+        options:
+          - "Echipamente"
+          - "Produse"
+          - "Metode de lucru"
+          - "Facility management"
+          - "Igienă"
+          - "Sustenabilitate"
+          - "Studii de caz"
+          - "Tendințe"
+      - { name: "author", label: "Autor", widget: "string", default: "Redacția Cleaning Journal", required: false }
+      - { name: "date", label: "Data publicării", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - { name: "tags", label: "Etichete", widget: "list", required: false, hint: "Cuvinte-cheie, separate. Ex: scrubber-dryer, productivitate" }
+      - { name: "body", label: "Conținut", widget: "markdown" }

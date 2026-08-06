@@ -1,0 +1,14 @@
+{
+  "name": "cleaningjournal",
+  "version": "1.0.0",
+  "description": "Cleaning Journal — revista de curatenie profesionala (Eleventy + Decap CMS)",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy",
+    "cms": "decap-server"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.6",
+    "luxon": "^3.4.4"
+  }
+}

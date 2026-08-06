@@ -1,0 +1,39 @@
+---
+layout: base.njk
+pagination:
+  data: categorii
+  size: 1
+  alias: cat
+permalink: "/categorie/{{ cat.slug }}/index.html"
+eleventyComputed:
+  title: "{{ cat.name }}"
+  description: "{{ cat.desc }}"
+eleventyExcludeFromCollections: true
+---
+<div class="page-head">
+  <div class="wrap">
+    <h1>{{ cat.name }}</h1>
+    <p>{{ cat.desc }}</p>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="wrap">
+    {% set catPosts = collections.posts | byCat(cat.name) %}
+    <div class="grid3">
+      {% for post in catPosts %}
+      <article class="card">
+        <a href="{{ post.url }}" class="cover {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
+        <div class="body">
+          <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+          <p>{{ post.data.dek }}</p>
+          <div class="foot">{{ post.data.author or "Redacția" }}<span class="dot"></span>{{ post.date | dataRo }}</div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% if catPosts.length == 0 %}
+      <p style="color:var(--muted);font-size:15px">Momentan nu există articole în această categorie. Revino curând — publicăm zilnic.</p>
+    {% endif %}
+  </div>
+</section>

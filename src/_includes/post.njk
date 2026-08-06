@@ -1,0 +1,42 @@
+---
+layout: base.njk
+---
+<article class="article">
+  <div class="crumb"><a href="/">Acasă</a> › <a href="/categorie/{{ category | slug }}/">{{ category }}</a></div>
+  <span class="chip">{{ category }}</span>
+  <h1 class="tt">{{ title }}</h1>
+  {% if dek %}<p class="dek">{{ dek }}</p>{% endif %}
+  <div class="byline">
+    <span class="av"></span>
+    <div>De <b>{{ author or "Redacția Cleaning Journal" }}</b> · {{ page.date | dataRo }} · {{ content | citire }} min citire</div>
+  </div>
+  <div class="heroimg {{ category | catColor }}"></div>
+  <div class="content">
+    {{ content | safe }}
+  </div>
+  {% if tags %}
+  <div class="tags">
+    {% for t in tags %}{% if t != "posts" %}<a href="/categorie/{{ category | slug }}/">{{ t }}</a>{% endif %}{% endfor %}
+  </div>
+  {% endif %}
+</article>
+
+<section class="band">
+  <div class="wrap sec">
+    <div class="sec-head"><h2><span></span>Articole recente</h2></div>
+    <div class="grid3">
+      {% for post in collections.posts | limit(4) %}
+        {% if post.url != page.url %}
+        <article class="card">
+          <a href="{{ post.url }}" class="cover {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
+          <div class="body">
+            <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+            <p>{{ post.data.dek }}</p>
+            <div class="foot">{{ post.data.author or "Redacția" }}<span class="dot"></span>{{ post.date | dataRo }}</div>
+          </div>
+        </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

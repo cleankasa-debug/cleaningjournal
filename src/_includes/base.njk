@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if title %}{{ title }} — {{ site.title }}{% else %}{{ site.title }} — {{ site.tagline }}{% endif %}</title>
+<meta name="description" content="{{ description or site.description }}">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<meta property="og:title" content="{{ title or site.title }}">
+<meta property="og:description" content="{{ description or site.description }}">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="date">{{ site.tagline }}</span>
+    <nav>
+      <a href="/despre/">Despre</a>
+      <a href="/categorie/tendinte/">Tendințe</a>
+      <a href="#newsletter">Newsletter</a>
+    </nav>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <a href="/" class="brand" aria-label="{{ site.title }}">
+      <span class="mark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 3 C12 3 6 9.5 6 13.7 a6 6 0 0 0 12 0 C18 9.5 12 3 12 3 Z" fill="#fff"/>
+          <g transform="translate(19,6.2)"><path d="M0,-3 C0.4,-0.8 0.8,-0.4 3,0 C0.8,0.4 0.4,0.8 0,3 C-0.4,0.8 -0.8,0.4 -3,0 C-0.8,-0.4 -0.4,-0.8 0,-3 Z" fill="#c9a24b"/></g>
+        </svg>
+      </span>
+      <span class="title">
+        <b>cleaning <em>journal</em></b>
+        <span>{{ site.tagline }}</span>
+      </span>
+    </a>
+    <div class="cta">
+      <a href="#newsletter" class="btn">Abonează-te</a>
+    </div>
+  </div>
+</header>
+
+<nav class="mainnav">
+  <div class="wrap">
+    {% for item in site.nav %}
+      <a href="{{ item.url }}"{% if page.url == item.url %} class="active"{% endif %}>{{ item.label }}</a>
+    {% endfor %}
+  </div>
+</nav>
+
+<main>
+{{ content | safe }}
+</main>
+
+<section class="sec" id="newsletter">
+  <div class="wrap">
+    <div class="news">
+      <div>
+        <h2>Primește cele mai bune articole, săptămânal</h2>
+        <p>Un rezumat curat, fără spam: echipamente noi, metode testate și tendințe din industria de curățenie.</p>
+      </div>
+      <form onsubmit="return false">
+        <input type="email" placeholder="adresa ta de email" aria-label="Email">
+        <button class="btn" type="submit">Abonează-te</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fbrand">
+        <span class="t">cleaning <em>journal</em></span>
+        <p>{{ site.description }}</p>
+        <div class="partner">Un proiect editorial susținut de <b>{{ site.partner }}</b> — echipamente profesionale de curățenie.</div>
+      </div>
+      <div>
+        <h5>Categorii</h5>
+        <ul>
+          <li><a href="/categorie/echipamente/">Echipamente</a></li>
+          <li><a href="/categorie/produse/">Produse</a></li>
+          <li><a href="/categorie/metode-de-lucru/">Metode de lucru</a></li>
+          <li><a href="/categorie/facility-management/">Facility management</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Revista</h5>
+        <ul>
+          <li><a href="/despre/">Despre noi</a></li>
+          <li><a href="/categorie/tendinte/">Tendințe</a></li>
+          <li><a href="/categorie/sustenabilitate/">Sustenabilitate</a></li>
+          <li><a href="/admin/">Editare (CMS)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+          <li><a href="#newsletter">Newsletter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy">
+      <span>© 2026 Cleaning Journal. Toate drepturile rezervate.</span>
+      <span>cleaningjournal.com</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
