@@ -113,7 +113,14 @@ Răspunde DOAR cu un obiect JSON valid, fără text în plus, cu exact cheile:
 
   const payload = JSON.stringify({
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.9, maxOutputTokens: 4096, responseMimeType: "application/json" },
+    generationConfig: {
+      temperature: 0.9,
+      maxOutputTokens: 8192,
+      responseMimeType: "application/json",
+      // Modelele „flash" 2.5 au „thinking" activ implicit, care consumă bugetul de tokeni
+      // și lasă răspunsul JSON trunchiat. Îl dezactivăm ca să rămână tokeni pentru articol.
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   });
 
   let res, lastText = "";
@@ -147,6 +154,10 @@ Răspunde DOAR cu un obiect JSON valid, fără text în plus, cu exact cheile:
   if (!res.ok) throw new Error(`Gemini HTTP ${res.status} după reîncercări: ${lastText}`);
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  if (!text.trim()) {
+    const fr = data?.candidates?.[0]?.finishReason || "necunoscut";
+    throw new Error(`Răspuns gol de la Gemini (finishReason: ${fr}).`);
+  }
   let jsonStr = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
   let obj;
   try {
