@@ -2,6 +2,7 @@ name: Articole zilnice
 
 on:
   schedule:
+    # 06:12 UTC (~09:12 ora Romaniei) - zilnic
     - cron: "12 6 * * *"
   workflow_dispatch: {}
 
@@ -27,7 +28,6 @@ jobs:
       - name: Genereaza articole
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: "gemini-2.5-flash"
           ARTICLES_PER_RUN: "6"
         run: node scripts/generate-articles.mjs
 
@@ -39,6 +39,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "Nimic nou de publicat."
           else
-            git commit -m "Articole noi automate"
+            git commit -m "Articole noi automate ($(date -u +%Y-%m-%d))"
             git push
           fi
