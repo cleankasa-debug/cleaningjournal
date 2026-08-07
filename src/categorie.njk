@@ -23,7 +23,7 @@ eleventyExcludeFromCollections: true
     <div class="grid3">
       {% for post in catPosts %}
       <article class="card">
-        <a href="{{ post.url }}" class="cover {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
+        <a href="{{ post.url }}" class="cover cat-{{ post.data.category | slug }} {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
         <div class="body">
           <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
           <p>{{ post.data.dek }}</p>
