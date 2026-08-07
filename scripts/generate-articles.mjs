@@ -115,11 +115,10 @@ Răspunde DOAR cu un obiect JSON valid, fără text în plus, cu exact cheile:
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: {
       temperature: 0.9,
-      maxOutputTokens: 8192,
+      // Buget mare de tokeni: modelele „flash" recente au „thinking" activ care consumă
+      // din acest buget; lăsăm suficient loc și pentru gândire, și pentru articolul complet.
+      maxOutputTokens: 16384,
       responseMimeType: "application/json",
-      // Modelele „flash" 2.5 au „thinking" activ implicit, care consumă bugetul de tokeni
-      // și lasă răspunsul JSON trunchiat. Îl dezactivăm ca să rămână tokeni pentru articol.
-      thinkingConfig: { thinkingBudget: 0 },
     },
   });
 
