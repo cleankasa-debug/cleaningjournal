@@ -27,6 +27,7 @@ jobs:
       - name: Genereaza articole
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: "gemini-2.5-flash"
           ARTICLES_PER_RUN: "6"
         run: node scripts/generate-articles.mjs
 
