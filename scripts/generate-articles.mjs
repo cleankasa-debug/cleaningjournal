@@ -96,6 +96,32 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Escapează caracterele de control (newline/tab/CR) rămase în interiorul valorilor
+// string dintr-un JSON — modelele le lasă uneori neescapate și strică JSON.parse.
+function sanitizeControlChars(s) {
+  let out = "", inStr = false, prev = "";
+  for (const ch of s) {
+    if (ch === '"' && prev !== "\\") inStr = !inStr;
+    if (inStr && ch === "\n") { out += "\\n"; prev = ch; continue; }
+    if (inStr && ch === "\r") { out += "\\r"; prev = ch; continue; }
+    if (inStr && ch === "\t") { out += "\\t"; prev = ch; continue; }
+    out += ch;
+    prev = ch;
+  }
+  return out;
+}
+
+// Extrage obiectul articolului din răspunsul modelului; întoarce null dacă nu reușește.
+function tryParseArticle(text) {
+  let s = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+  const start = s.indexOf("{"), end = s.lastIndexOf("}");
+  if (start !== -1 && end !== -1) s = s.slice(start, end + 1);
+  for (const candidate of [s, sanitizeControlChars(s)]) {
+    try { return JSON.parse(candidate); } catch { /* încearcă varianta următoare */ }
+  }
+  return null;
+}
+
 async function generateOne(theme, category, avoid) {
   const prompt = `Ești redactor la „Cleaning Journal", o revistă online B2B în limba română dedicată industriei de curățenie profesională (public: firme de curățenie, facility management, administratori de clădiri).
 
@@ -122,51 +148,52 @@ Răspunde DOAR cu un obiect JSON valid, fără text în plus, cu exact cheile:
     },
   });
 
-  let res, lastText = "";
+  let lastErr = "eroare necunoscută";
   for (let attempt = 0; attempt < 8; attempt++) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel()}:generateContent?key=${API_KEY}`;
-    res = await fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload,
     });
-    if (res.ok) break;
-    lastText = await res.text();
-    // Model indisponibil pentru acest cont → trecem la următorul model din listă
-    if (isModelUnavailable(res.status, lastText) && modelIndex < MODEL_CANDIDATES.length - 1) {
-      console.log(`  Model „${currentModel()}" indisponibil (HTTP ${res.status}); încerc „${MODEL_CANDIDATES[modelIndex + 1]}".`);
-      modelIndex++;
+
+    if (!res.ok) {
+      const errText = await res.text();
+      // Model indisponibil pentru acest cont → trecem la următorul model din listă
+      if (isModelUnavailable(res.status, errText) && modelIndex < MODEL_CANDIDATES.length - 1) {
+        console.log(`  Model „${currentModel()}" indisponibil (HTTP ${res.status}); încerc „${MODEL_CANDIDATES[modelIndex + 1]}".`);
+        modelIndex++;
+        continue;
+      }
+      if (res.status === 429 || res.status >= 500) {
+        // limită de rată / eroare temporară — așteaptă și reîncearcă
+        let wait = 20000;
+        const m = errText.match(/"retryDelay":\s*"(\d+)s"/);
+        if (m) wait = (parseInt(m[1], 10) + 2) * 1000;
+        wait = Math.min(wait, 65000);
+        console.log(`  HTTP ${res.status}; reîncerc în ${Math.round(wait / 1000)}s (încercarea ${attempt + 1}/8) [model: ${currentModel()}]`);
+        await new Promise((r) => setTimeout(r, wait));
+        continue;
+      }
+      throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
+    }
+
+    // Răspuns OK — extragem textul și încercăm să parsăm JSON-ul
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    if (!text.trim()) {
+      lastErr = `răspuns gol (finishReason: ${data?.candidates?.[0]?.finishReason || "necunoscut"})`;
+      console.log(`  ${lastErr}; reîncerc (${attempt + 1}/8).`);
+      await new Promise((r) => setTimeout(r, 2000));
       continue;
     }
-    if (res.status === 429 || res.status >= 500) {
-      // limită de rată / eroare temporară — așteaptă și reîncearcă
-      let wait = 20000;
-      const m = lastText.match(/"retryDelay":\s*"(\d+)s"/);
-      if (m) wait = (parseInt(m[1], 10) + 2) * 1000;
-      wait = Math.min(wait, 65000);
-      console.log(`  HTTP ${res.status}; reîncerc în ${Math.round(wait / 1000)}s (încercarea ${attempt + 1}/8) [model: ${currentModel()}]`);
-      await new Promise((r) => setTimeout(r, wait));
-      continue;
-    }
-    throw new Error(`Gemini HTTP ${res.status}: ${lastText}`);
+    const obj = tryParseArticle(text);
+    if (obj && obj.title && obj.body) return obj;
+    lastErr = "JSON invalid / incomplet de la model";
+    console.log(`  ${lastErr}; reîncerc (${attempt + 1}/8).`);
+    await new Promise((r) => setTimeout(r, 2000));
   }
-  if (!res.ok) throw new Error(`Gemini HTTP ${res.status} după reîncercări: ${lastText}`);
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  if (!text.trim()) {
-    const fr = data?.candidates?.[0]?.finishReason || "necunoscut";
-    throw new Error(`Răspuns gol de la Gemini (finishReason: ${fr}).`);
-  }
-  let jsonStr = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
-  let obj;
-  try {
-    obj = JSON.parse(jsonStr);
-  } catch {
-    const s = jsonStr.indexOf("{"), e = jsonStr.lastIndexOf("}");
-    obj = JSON.parse(jsonStr.slice(s, e + 1));
-  }
-  if (!obj.title || !obj.body) throw new Error("Răspuns incomplet de la Gemini.");
-  return obj;
+  throw new Error(`Nu am obținut un articol valid după reîncercări: ${lastErr}`);
 }
 
 async function main() {
