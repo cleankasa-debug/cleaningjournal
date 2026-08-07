@@ -6,9 +6,26 @@ import fs from "node:fs";
 import path from "node:path";
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 const COUNT = parseInt(process.env.ARTICLES_PER_RUN || "6", 10);
 const POSTS_DIR = "src/posts";
+
+// Listă de modele candidate (nivel gratuit). Scriptul le încearcă în ordine
+// și trece automat la următorul dacă unul nu e disponibil (404 / not available).
+// Poți forța un model prin variabila GEMINI_MODEL (îl punem primul în listă).
+const MODEL_CANDIDATES = [
+  ...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []),
+  "gemini-flash-latest",
+  "gemini-2.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+];
+let modelIndex = 0;
+function currentModel() { return MODEL_CANDIDATES[modelIndex]; }
+function isModelUnavailable(status, text) {
+  if (status !== 404 && status !== 400 && status !== 403) return false;
+  return /not available|no longer available|not found|is not supported|unavailable|does not exist/i.test(text || "");
+}
 
 if (!API_KEY) {
   console.error("Lipsește GEMINI_API_KEY.");
@@ -94,19 +111,40 @@ Cerințe:
 Răspunde DOAR cu un obiect JSON valid, fără text în plus, cu exact cheile:
 {"title": "...", "dek": "un subtitlu scurt de 1 propoziție", "tags": ["3-5 etichete scurte"], "body": "conținutul articolului în Markdown"}`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9, maxOutputTokens: 4096, responseMimeType: "application/json" },
-    }),
+  const payload = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.9, maxOutputTokens: 4096, responseMimeType: "application/json" },
   });
 
-  if (!res.ok) {
-    throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
+  let res, lastText = "";
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel()}:generateContent?key=${API_KEY}`;
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+    });
+    if (res.ok) break;
+    lastText = await res.text();
+    // Model indisponibil pentru acest cont → trecem la următorul model din listă
+    if (isModelUnavailable(res.status, lastText) && modelIndex < MODEL_CANDIDATES.length - 1) {
+      console.log(`  Model „${currentModel()}" indisponibil (HTTP ${res.status}); încerc „${MODEL_CANDIDATES[modelIndex + 1]}".`);
+      modelIndex++;
+      continue;
+    }
+    if (res.status === 429 || res.status >= 500) {
+      // limită de rată / eroare temporară — așteaptă și reîncearcă
+      let wait = 20000;
+      const m = lastText.match(/"retryDelay":\s*"(\d+)s"/);
+      if (m) wait = (parseInt(m[1], 10) + 2) * 1000;
+      wait = Math.min(wait, 65000);
+      console.log(`  HTTP ${res.status}; reîncerc în ${Math.round(wait / 1000)}s (încercarea ${attempt + 1}/8) [model: ${currentModel()}]`);
+      await new Promise((r) => setTimeout(r, wait));
+      continue;
+    }
+    throw new Error(`Gemini HTTP ${res.status}: ${lastText}`);
   }
+  if (!res.ok) throw new Error(`Gemini HTTP ${res.status} după reîncercări: ${lastText}`);
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
   let jsonStr = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
@@ -128,6 +166,7 @@ async function main() {
   const cats = shuffle(CATEGORIES);
   const date = todayISO();
   let written = 0;
+  console.log(`Modele candidate: ${MODEL_CANDIDATES.join(", ")}`);
 
   for (let i = 0; i < COUNT; i++) {
     const theme = themes[i % themes.length];
@@ -160,7 +199,7 @@ ${String(art.body).trim()}
     } catch (e) {
       console.error(`Articol ${i + 1} eșuat:`, e.message);
     }
-    await new Promise((r) => setTimeout(r, 2500)); // respectă limitele nivelului gratuit
+    await new Promise((r) => setTimeout(r, 5000)); // respectă limitele nivelului gratuit
   }
 
   console.log(`Gata. Articole scrise: ${written}/${COUNT}`);
