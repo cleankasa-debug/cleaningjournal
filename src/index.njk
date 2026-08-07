@@ -9,7 +9,7 @@ eleventyExcludeFromCollections: true
 <section class="hero">
   <div class="wrap hero-grid">
     {% for post in featured %}
-    <article class="lead {{ post.data.category | catColor }}">
+    <article class="lead cat-{{ post.data.category | slug }} {{ post.data.category | catColor }}">
       <span class="chip">{{ post.data.category }}</span>
       <h1><a href="{{ post.url }}">{{ post.data.title }}</a></h1>
       <p>{{ post.data.dek }}</p>
@@ -19,7 +19,7 @@ eleventyExcludeFromCollections: true
     <div class="side">
       {% for post in sideposts %}
       <a href="{{ post.url }}" class="scard">
-        <span class="thumb {{ post.data.category | catColor }}"></span>
+        <span class="thumb cat-{{ post.data.category | slug }} {{ post.data.category | catColor }}"></span>
         <div>
           <span class="k">{{ post.data.category }}</span>
           <h3>{{ post.data.title }}</h3>
@@ -39,7 +39,7 @@ eleventyExcludeFromCollections: true
     <div class="grid3">
       {% for post in rest %}
       <article class="card">
-        <a href="{{ post.url }}" class="cover {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
+        <a href="{{ post.url }}" class="cover cat-{{ post.data.category | slug }} {{ post.data.category | catColor }}"><span class="tag">{{ post.data.category }}</span></a>
         <div class="body">
           <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
           <p>{{ post.data.dek }}</p>
