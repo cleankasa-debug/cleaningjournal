@@ -47,16 +47,19 @@ mochetelor de trafic intens.
 |---|---|
 | Tip | Aspirator injecție-extracție (spray-extraction) |
 | Motoare aspirație | 2 motoare |
-| Putere maximă | 2300 W |
+| Putere | 1900 W nominal / 2300 W max |
 | Debit aer | 100 l/s |
 | Depresiune (vacuum) | 190 mbar |
 | Nivel zgomot | 65 dB(A) |
+| Rezervor soluție | 12 L |
+| Rezervor recuperare | 56 L |
 | Cuvă | Oțel inoxidabil, pe cadru mobil |
+| Dimensiuni (L×l×h) | 610 × 540 × 920 mm |
 | Cablu alimentare | 10 m |
 | Alimentare | 220–240 V |
-| Variante pompă | ULKA / CEME / AUTO |
+| Variante pompă | ULKA (28 W · 0,95 l/min · 4 bar) / CEME (60 W · 4,25 l/min · 6 bar) / AUTO (CEME + furtun aspirație 6 m) |
 
-*Configurația exactă (variantă pompă, capacități rezervoare) se stabilește la comandă.*
+*Configurația exactă (variantă pompă) se stabilește la comandă.*
 
 **Preț la cerere.** Pentru ofertă personalizată, disponibilitate și consultanță tehnică,
 contactează-ne la **0758 025 025** — echipa CleanKasa te ajută să alegi configurația potrivită.
@@ -87,13 +90,16 @@ contactează-ne la **0758 025 025** — echipa CleanKasa te ajută să alegi con
 
 ---
 
-## 7. DE CONFIRMAT (surse diferite — verifică pe pagina .eu înainte de publicare)
-- **Rezervor soluție (detergent):** 11 L / 12 L / 13 L — surse diferite.
-- **Rezervor recuperare:** capacitate utilă ~56 L (o sursă indică și „tank 80 L") — de confirmat exact.
-- **Pompă ULKA:** 28 W, 0,95 l/min, 4 bar (o sursă) vs. 48 W, 1,1 l/min, 7 bar (altă sursă).
-- **Pompă CEME:** 60 W, 4,25 l/min, 6 bar (consistent între surse).
-- **Greutate:** ~24,5 kg — de confirmat.
-- **Putere nominală:** 1900 W nominal / 2300 W max — de confirmat formularea.
+## 7. DATE CONFIRMATE (verificate pe cleankasa.eu — 2026-08-08)
+- **Rezervor soluție (detergent):** 12 L ✓
+- **Rezervor recuperare:** 56 L ✓
+- **Pompă ULKA:** 28 W, 0,95 l/min, 4 bar ✓
+- **Pompă CEME:** 60 W, 4,25 l/min, 6 bar ✓
+- **Variantă AUTO:** = pompă CEME + furtun aspirație 6 m ✓
+- **Greutate:** 24,5 kg ✓
+- **Dimensiuni:** 610 × 540 × 920 mm ✓
+- **Putere:** 1900 W nominal / 2300 W max ✓
+- **Preț:** neafișat pe .eu → confirmă „LA CERERE".
 - **Telefon CTA:** 0758 025 025 (confirmat — folosit la toate produsele).
 
 ## 8. Imagine
