@@ -15,7 +15,7 @@ Aspirator cu spălare injecție-extracție Ghibli M 26 I
 Aspirator injecție-extracție Ghibli M 26 I | CleanKasa
 
 ## 3. Meta Tag Description (General → Meta Tag Description, Romana)
-Aspirator profesional cu spălare injecție-extracție Ghibli M 26 I, cuvă inox, dublu motor 2300 W. Ideal mochete, tapițerie, auto. Cere ofertă: [TELEFON].
+Aspirator profesional cu spălare injecție-extracție Ghibli M 26 I, cuvă inox, dublu motor 2300 W. Ideal mochete, tapițerie, auto. Cere ofertă: 0758 025 025.
 
 ## 4. SEO keyword / URL (tab SEO)
 aspirator-injectie-extractie-ghibli-m-26-i
@@ -59,7 +59,7 @@ mochetelor de trafic intens.
 *Configurația exactă (variantă pompă, capacități rezervoare) se stabilește la comandă.*
 
 **Preț la cerere.** Pentru ofertă personalizată, disponibilitate și consultanță tehnică,
-contactează-ne la **[TELEFON]** — echipa CleanKasa te ajută să alegi configurația potrivită.
+contactează-ne la **0758 025 025** — echipa CleanKasa te ajută să alegi configurația potrivită.
 
 ---
 
@@ -94,7 +94,7 @@ contactează-ne la **[TELEFON]** — echipa CleanKasa te ajută să alegi config
 - **Pompă CEME:** 60 W, 4,25 l/min, 6 bar (consistent între surse).
 - **Greutate:** ~24,5 kg — de confirmat.
 - **Putere nominală:** 1900 W nominal / 2300 W max — de confirmat formularea.
-- **[TELEFON]:** numărul de telefon pentru CTA — de completat o singură dată (îl folosim la toate produsele).
+- **Telefon CTA:** 0758 025 025 (confirmat — folosit la toate produsele).
 
 ## 8. Imagine
 - De transferat imaginea produsului de pe .eu în `/image/catalog/...` pe serverul .ro (prin cPanel/File Manager), apoi atașată la produs. (Pas de făcut în mediul cu acces la server.)
